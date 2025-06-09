@@ -1,7 +1,15 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var logger = LoggerFactory.Create(logging =>
+{
+    logging.AddConsole();
+}).CreateLogger("Startup");
+
+logger.LogInformation("Current environment: {env}", builder.Environment.EnvironmentName);
 
 // Load env name as string
 var envName = builder.Environment.EnvironmentName;

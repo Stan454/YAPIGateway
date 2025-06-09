@@ -2,10 +2,23 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
 
-builder.Configuration.AddJsonFile("Ocelot.json", optional: false, reloadOnChange: true);
+// Load env name as string
+var envName = builder.Environment.EnvironmentName;
+
+string ocelotConfigFile = envName switch
+{
+    "Minikube" => "ocelot.Minikube.json",
+    "Development" => "ocelot.Development.json",
+    _ => "ocelot.json"
+};
+
+// Add the selected Ocelot config JSON file before AddOcelot
+builder.Configuration.AddJsonFile(ocelotConfigFile, optional: false, reloadOnChange: true);
+
+builder.Services.AddControllers();
 builder.Services.AddOcelot(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
